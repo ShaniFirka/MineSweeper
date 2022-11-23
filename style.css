@@ -6,5 +6,9 @@
 }
 
 .board td:hover {
-    background-color: lightsalmon;
+    background-color: rgb(131, 127, 126);
+}
+
+.shown {
+    background-color: aquamarine;
 }

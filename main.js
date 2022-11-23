@@ -2,6 +2,7 @@
 
 // ----global variables----
 const MINE = '💣'
+const FLEG = '🚩'
 var gBoard = []
 
 var gLevel = {
@@ -24,7 +25,7 @@ function initGame() {
 
 function buildBoard() {
     var boardToCompare = createBoardWithMines()
-    console.log(boardToCompare)
+    // console.log(boardToCompare)
     var board = []
     for (var i = 0; i < gLevel.SIZE; i++) {
         board.push([])
@@ -35,7 +36,7 @@ function buildBoard() {
 
             board[i][j] = {
                 minesAroundCount: minesAroundCount,
-                isShown: true,
+                isShown: false,
                 isMine: isMine,
                 isMarked: false
             }
@@ -50,42 +51,72 @@ function renderBoard(board) {
     for (var i = 0; i < board.length; i++) {
         strHTML += '<tr>'
         for (var j = 0; j < board[0].length; j++) {
-            var currCell = board[i][j]
-            var isMinevalue = (currCell.isMine) ? MINE : ''
-            var showm = (currCell.isShown) ? isMinevalue : ''
+            var cell = board[i][j]
+            var cellValue = ''
+            if (cell.isShown) {
+                if (cell.isMine) cellValue = MINE
+                else cellValue = (cell.ngsMinesCount === 0) ? '' : cell.ngsMinesCount
+            }
 
-
-            var cellData = 'data-i="' + i + '" data-j="' + j + '"'
-            strHTML += `<td ${cellData} onclick="CellClicked(this,${i},${j})">
-            ${isMinevalue}</td > `
+            strHTML += `<td id ${i}-${j} onclick="cellClicked(this,${i},${j})">
+            <span>${cellValue}</span></td > `
         }
         strHTML += '</tr>\n'
     }
-    // console.log(strHTML)
     var elBoard = document.querySelector('.board')
     elBoard.innerHTML = strHTML
 }
 
+function renderCell(elCell, value) {
+    var elSpan = elCell.querySelector('span')
+    elSpan.innerText = value
 
+}
 
+function countNegs(cellI, cellJ, mat) {
+    var negsCount = 0
+    for (var i = cellI - 1; i <= cellI + 1; i++) {
+        if (i < 0 || i >= mat.length) continue
+        for (var j = cellJ - 1; j <= cellJ + 1; j++) {
+            if (i === cellI && j === cellJ) continue
+            if (j < 0 || j >= mat[i].length) continue
+            var cell = mat[i][j]
+            if (cell === MINE) negsCount++
+        }
+    }
+    return negsCount
+}
 
+function cellClicked(elCell, i, j) {
+    var cell = gBoard[i][j]
+    var cellValue = ''
+    if (!cell.isShown) {
+        cell.isShown = true
+        if (!cell.isMine) {
+            if (cell.minesAroundCount !== 0) cellValue = cell.minesAroundCount
+        } else cellValue = MINE
+        if (!elCell.classList.contains('shown')) elCell.classList.add('shown')
+        renderCell(elCell, cellValue)
+    } return
+}
+function rightClick(elCell) {
+    var elIdx = elCell.innerText
+
+    console.log(elCell)
+    // var cell = gBoard[elIdx.i][elIdx.j]
+    // cell.isMarked = true
+    // elCell.classList.add('marked')
+    // var value = FLEG
+    // renderCell(elCell, value)
+
+}
+// function getCellIndex(elCell) {
+//     var i = +elCell.id.split('-')[1]
+//     var j = +elCell.id.split('-')[2]
+//     console.log(i, j)
+//     return { i: i, j: j }
+// }
 // ----FUNCTIONS:----
-
-// initGame() -- onload
-
-// buildBoard() :
-// -Builds the board
-// Set mines at random locations
-// Call setMinesNegsCount()
-// Return the created board
-
-// setMinesNegsCount(board):
-// Count mines around each cell
-// set the cell's minesAroundCount.
-
-
-// cellClicked(elCell, i, j):
-// Called when a cell (td) is clicked
 
 // cellMarked(elCell):
 //Called on right click to mark a cell (suspected to be a mine)

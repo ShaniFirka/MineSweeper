@@ -24,10 +24,9 @@ function craeteMinesArrey() {
         minesArrey.push(value)
         mines--
     }
-    console.log(minesArrey)
     return minesArrey
 }
-function drawNum(array) {
+function drawValues(array) {
     var idx = getRandomInt(0, array.length)
     var value = array[idx]
     array.splice(idx, 1)
@@ -40,24 +39,13 @@ function createBoardWithMines() {
     for (var i = 0; i < gLevel.SIZE; i++) {
         board.push([])
         for (var j = 0; j < gLevel.SIZE; j++) {
-            board[i][j] = drawNum(minesArrey)
+            board[i][j] = drawValues(minesArrey)
         }
     }
     return board
 }
 
-function countNegs(cellI, cellJ, mat) {
-    var negsCount = 0
-    for (var i = cellI - 1; i <= cellI + 1; i++) {
-        if (i < 0 || i >= mat.length) continue
-        for (var j = cellJ - 1; j <= cellJ + 1; j++) {
-            if (i === cellI && j === cellJ) continue
-            if (j < 0 || j >= mat[i].length) continue
-            if (mat[i][j]) negsCount++
-        }
-    }
-    return negsCount
-}
+
 
 /////////////////////////////////////////////////////////////////////////////////
 function getRandomInt(min, max) {
