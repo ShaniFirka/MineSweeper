@@ -8,24 +8,24 @@
     <title>Mine Sweeper</title>
     <link rel="stylesheet" href="style.css">
 </head>
-<div class="center">
 
-    <body onload="initGame()">
-        <h1>MINE SWEEPER 💣</h1>
-        <button class="button" onclick="(startTimer())">😃</button>
-        <div><span class="min">0</span>:<span class="sec">0</span></div>
 
+<body onload="initGame()">
+    <h1>MINE SWEEPER 💣</h1>
+    <div class="buttons">
+        <button class="button" onclick="(toggleGame())">😃</button>
+        <div><span class="min">00</span>:<span class="sec">00</span></div>
         <button class="button" onclick="setLevel('easy')">easy</button>
         <button class="button" onclick="setLevel('medium')">medium</button>
         <button class="button" onclick="setLevel('hard')">hard</button>
+    </div>
+    <table border="1" cellpadding="10">
+        <tbody class="board"></tbody>
 
-        <table border="1" cellpadding="10">
-            <tbody class="board"></tbody>
+    </table>
+    <script src="utils.js"></script>
+    <script src="main.js"></script>
+</body>
 
-        </table>
-        <script src="utils.js"></script>
-        <script src="main.js"></script>
-    </body>
-</div>
 
 </html>

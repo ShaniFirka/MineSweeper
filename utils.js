@@ -1,27 +1,27 @@
 
 window.addEventListener('contextmenu', e => e.preventDefault());
 
-function renderBoard(board) {
-    var strHTML = ''
-    for (var i = 0; i < board.length; i++) {
-        strHTML += '<tr>'
-        for (var j = 0; j < board[0].length; j++) {
-            var currCell = board[i][j]
+// function renderBoard(board) {
+//     var strHTML = ''
+//     for (var i = 0; i < board.length; i++) {
+//         strHTML += '<tr>'
+//         for (var j = 0; j < board[0].length; j++) {
+//             var currCell = board[i][j]
 
-            var cellData = 'data-i="' + i + '" data-j="' + j + '"'
-            strHTML += `<td ${cellData} onclick="CellClicked(this,${i},${j})">
-                ${currCell}</td>`
-        }
-        strHTML += '</tr>\n'
-    }
-    var elBoard = document.querySelector('.board')
-    elBoard.innerHTML = strHTML
-}
+//             var cellData = 'data-i="' + i + '" data-j="' + j + '"'
+//             strHTML += `<td ${cellData} onclick="CellClicked(this,${i},${j})">
+//                 ${currCell}</td>`
+//         }
+//         strHTML += '</tr>\n'
+//     }
+//     var elBoard = document.querySelector('.board')
+//     elBoard.innerHTML = strHTML
+// }
 function craeteMinesArrey() {
     var minesArrey = []
     var mines = gLevel.MINES
     for (var i = 0; i < gLevel.SIZE ** 2; i++) {
-        var value = (mines > 0) ? MINE : ''
+        var value = (mines > 0) ? MINE : EMPTY
         minesArrey.push(value)
         mines--
     }
