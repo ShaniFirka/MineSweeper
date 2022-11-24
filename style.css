@@ -3,12 +3,64 @@
     height: 30px;
     text-align: center;
     transition: 0.5s;
+    margin: auto;
+    border-spacing: 5px;
 }
 
-.board td:hover {
-    background-color: rgb(131, 127, 126);
+table {
+    border-spacing: 10px;
+    border: solid rgb(243, 111, 236);
+    border-radius: 10px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+
+.cell {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    text-align: center;
+    font-size: 1.5em;
 }
 
 .shown {
-    background-color: aquamarine;
+    border: solid 3px;
+    border-color: aquamarine;
+    background: linear-gradient(to bottom, black, gray);
+}
+
+.board td:hover {
+    background: linear-gradient(to bottom, black, gray);
+    cursor: pointer;
+}
+
+.level {
+    display: inline-block;
+    border: solid rgb(243, 111, 236);
+    border-radius: 10px;
+    background-color: black;
+    color: white;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+    font-size: 20px;
+    margin-bottom: 10px;
+    margin-top: 10px;
+    padding: 10px;
+}
+
+/* .levels {
+    align-content: center;
+} */
+
+.level:hover {
+    font-size: 15px;
+
+}
+
+body {
+    margin: auto;
+    background: #111;
+    color: white;
 }

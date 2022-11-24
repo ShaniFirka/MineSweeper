@@ -8,13 +8,24 @@
     <title>Document</title>
     <link rel="stylesheet" href="style.css">
 </head>
+<div class="center">
 
-<body onload="initGame()">
-    <table border="1" cellpadding="10">
-        <tbody class="board"></tbody>
-    </table>
-    <script src="utils.js"></script>
-    <script src="main.js"></script>
-</body>
+    <body onload="initGame(4,2)">
+        <h1>MINE SWEEPER 💣</h1>
+        <button onclick="(startTimer())">😃</button>
+        <div><span class="min">0</span>:<span class="sec">0</span></div>
+        <div class="levels">
+            <button onclick="initGame(4, 2)">easy</button>
+            <button onclick="initGame(8, 14)">medium</button>
+            <button onclick="initGame(12,32)">hard</button>
+        </div>
+        <table border="1" cellpadding="10">
+            <tbody class="board"></tbody>
+
+        </table>
+        <script src="utils.js"></script>
+        <script src="main.js"></script>
+    </body>
+</div>
 
 </html>

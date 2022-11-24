@@ -1,4 +1,5 @@
 
+window.addEventListener('contextmenu', e => e.preventDefault());
 
 function renderBoard(board) {
     var strHTML = ''

@@ -9,6 +9,7 @@ var gLevel = {
     SIZE: 4,
     MINES: 2
 }
+var ginterval
 var gGame = {
     isOn: false,
     shownCount: 0,
@@ -16,11 +17,36 @@ var gGame = {
     secsPassed: 0
 }
 
-function initGame() {
+function initGame(size, mines) {
+    var gLevel = {
+        SIZE: size,
+        MINES: mines
+    }
     gBoard = buildBoard()
     console.log(gBoard)
     renderBoard(gBoard)
 
+}
+function startTimer() {
+    ginterval = setInterval(setTimer, 1000)
+}
+
+function setTimer() {
+    //sec
+    var elSec = document.querySelector('.sec')
+    var currSec = elSec.innerText
+    currSec++
+    elSec.innerText = currSec
+    //min
+    var elMin = document.querySelector('.min')
+    var currMin = elMin.innerText
+    if (currSec > 60) {
+        currMin++
+        elMin.innerText = currMin
+        //need to reset the sec
+        currSec = 0
+        elSec.innerText = currSec
+    }
 }
 
 function buildBoard() {
@@ -53,13 +79,13 @@ function renderBoard(board) {
         for (var j = 0; j < board[0].length; j++) {
             var cell = board[i][j]
             var cellValue = ''
+            var cellData = 'i="' + i + '" j="' + j + '"'
             if (cell.isShown) {
                 if (cell.isMine) cellValue = MINE
                 else cellValue = (cell.ngsMinesCount === 0) ? '' : cell.ngsMinesCount
             }
-
-            strHTML += `<td id ${i}-${j} onclick="cellClicked(this,${i},${j})">
-            <span>${cellValue}</span></td > `
+            strHTML += `<td class="cell" ${cellData} oncontextmenu="cellMarked(this,${i},${j})" onclick="cellClicked(event,this,${i},${j})">
+            <span>${cellValue}</span></td> `
         }
         strHTML += '</tr>\n'
     }
@@ -87,29 +113,50 @@ function countNegs(cellI, cellJ, mat) {
     return negsCount
 }
 
-function cellClicked(elCell, i, j) {
+function cellClicked(ev, elCell, i, j) {
+    console.log(ev)
     var cell = gBoard[i][j]
     var cellValue = ''
     if (!cell.isShown) {
         cell.isShown = true
         if (!cell.isMine) {
-            if (cell.minesAroundCount !== 0) cellValue = cell.minesAroundCount
+            if (cell.minesAroundCount) cellValue = cell.minesAroundCount //(ngs>0)
+            // else expandShown(i, j)
         } else cellValue = MINE
-        if (!elCell.classList.contains('shown')) elCell.classList.add('shown')
+        elCell.classList.add('shown')
         renderCell(elCell, cellValue)
     } return
 }
-function rightClick(elCell) {
-    var elIdx = elCell.innerText
 
-    console.log(elCell)
-    // var cell = gBoard[elIdx.i][elIdx.j]
-    // cell.isMarked = true
-    // elCell.classList.add('marked')
-    // var value = FLEG
-    // renderCell(elCell, value)
+function expandShown(cellI, cellJ) {
+    // start with a basic-only opens the non-mine 1st degree neighbors
+    var emptyCells = []
+    for (var i = cellI - 1; i <= cellI + 1; i++) {
+        if (i < 0 || i >= gBoard.length) continue
+        for (var j = cellJ - 1; j <= cellJ + 1; j++) {
+            if (i === cellI && j === cellJ) continue
+            if (j < 0 || j >= gBoard[i].length) continue
+            var cell = gBoard[i][j]
+            if (cell.isMine) continue
+            if (cell.minesAroundCount > 0) continue
+            if (cell.minesAroundCount === 0) {
 
+                var nextCellclass = '.cell i=' + i + ' j=' + j + ''
+                var elnextCell = document.querySelector(nextCellclass)
+                console.log(elnextCell)
+                // var emptyCell = { cellelement: elnextCell, i: i, j: j }
+                // emptyCells.push(emptyCell)
+            }
+        }
+    }
+    for (var x = 0; x < emptyCells.length; x++) {
+        var currCell = emptyCells[x]
+        cellClicked(currCell.cellelement, currCell.i, currCell.j)
+    }
+    //When user clicks a cell with no mines around, we need to open that cell, but also its neighbors.
 }
+
+
 // function getCellIndex(elCell) {
 //     var i = +elCell.id.split('-')[1]
 //     var j = +elCell.id.split('-')[2]
@@ -118,6 +165,16 @@ function rightClick(elCell) {
 // }
 // ----FUNCTIONS:----
 
+function cellMarked(elCell, i, j) {
+    var cell = gBoard[i][j]
+    if (cell.isShown) return
+    if (cell.isMarked) {
+        cell.isMarked = false
+        renderCell(elCell, '')
+    }
+    cell.isMarked = true
+    renderCell(elCell, FLEG)
+}
 // cellMarked(elCell):
 //Called on right click to mark a cell (suspected to be a mine)
 //Search the web how to hide the context menu on right click
@@ -127,6 +184,3 @@ function rightClick(elCell) {
 // 1- all mines are marked,
 // 2- all the other cells are shown
 
-// expandShown(board, elCell,i, j):
-// start with a basic-only opens the non-mine 1st degree neighbors
-//When user clicks a cell with no mines around, we need to open that cell, but also its neighbors.
