@@ -2,37 +2,75 @@
 
 // ----global variables----
 const MINE = '💣'
-const FLEG = '🚩'
+const FLAG = '🚩'
 var gBoard = []
 
 var gLevel = {
     SIZE: 4,
     MINES: 2
 }
-var ginterval
+var gTimerInterval
 var gGame = {
     isOn: false,
     shownCount: 0,
     markedCount: 0,
-    secsPassed: 0
+    secsPassed: 0,
+    minesCount: 0,
+    markedCount: 0,
+    life: 2
 }
 
-function initGame(size, mines) {
-    var gLevel = {
-        SIZE: size,
-        MINES: mines
+function initGame() {
+    gGame = {
+        isOn: true,
+        shownCount: 0,
+        markedCount: 0,
+        secsPassed: 0,
+        // isFirstClick: false
+        minesCount: gLevel.MINES,
+        markedCount: 0,
+        life: 2
     }
     gBoard = buildBoard()
     console.log(gBoard)
     renderBoard(gBoard)
 
 }
+
+function setLevel(difficulty) {
+    switch (difficulty) {
+        case ('easy'):
+            gLevel.SIZE = 4
+            gLevel.MINES = 2
+            gGame.life = 2
+            break;
+        case ('medium'):
+            gLevel.SIZE = 8
+            gLevel.MINES = 14
+            gGame.life = 3
+            break;
+        case ('hard'):
+            gLevel.SIZE = 12
+            gLevel.MINES = 36
+            gGame.life = 3
+            break;
+        default:
+            gLevel.SIZE = 4
+            gLevel.MINES = 2
+            gGame.life = 2
+    }
+    initGame()
+}
+
 function startTimer() {
-    ginterval = setInterval(setTimer, 1000)
+    gTimerInterval = setInterval(setTimer, 1000)
+    gGame.isOn = true
 }
 
 function setTimer() {
+    if (!gGame.isOn) return
     //sec
+    gGame.secsPassed++
     var elSec = document.querySelector('.sec')
     var currSec = elSec.innerText
     currSec++
@@ -51,7 +89,6 @@ function setTimer() {
 
 function buildBoard() {
     var boardToCompare = createBoardWithMines()
-    // console.log(boardToCompare)
     var board = []
     for (var i = 0; i < gLevel.SIZE; i++) {
         board.push([])
@@ -71,24 +108,24 @@ function buildBoard() {
     return board
 }
 
-
 function renderBoard(board) {
     var strHTML = ''
     for (var i = 0; i < board.length; i++) {
         strHTML += '<tr>'
         for (var j = 0; j < board[0].length; j++) {
             var cell = board[i][j]
+            var cellData = i + '-' + j
             var cellValue = ''
-            var cellData = 'i="' + i + '" j="' + j + '"'
             if (cell.isShown) {
                 if (cell.isMine) cellValue = MINE
                 else cellValue = (cell.ngsMinesCount === 0) ? '' : cell.ngsMinesCount
             }
-            strHTML += `<td class="cell" ${cellData} oncontextmenu="cellMarked(this,${i},${j})" onclick="cellClicked(event,this,${i},${j})">
+            strHTML += `<td class="cell" ${cellData} oncontextmenu="cellMarked(this,${i},${j})" onclick="cellClicked(this,${i},${j})">
             <span>${cellValue}</span></td> `
         }
         strHTML += '</tr>\n'
     }
+
     var elBoard = document.querySelector('.board')
     elBoard.innerHTML = strHTML
 }
@@ -96,7 +133,6 @@ function renderBoard(board) {
 function renderCell(elCell, value) {
     var elSpan = elCell.querySelector('span')
     elSpan.innerText = value
-
 }
 
 function countNegs(cellI, cellJ, mat) {
@@ -113,15 +149,19 @@ function countNegs(cellI, cellJ, mat) {
     return negsCount
 }
 
-function cellClicked(ev, elCell, i, j) {
-    console.log(ev)
+function cellClicked(elCell, i, j) {
+    if (!gGame.isFirstClick) {
+        gGame.isFirstClick = true
+        startTimer()
+    }
+
     var cell = gBoard[i][j]
     var cellValue = ''
+    if (cell.isMarked) return
     if (!cell.isShown) {
         cell.isShown = true
         if (!cell.isMine) {
-            if (cell.minesAroundCount) cellValue = cell.minesAroundCount //(ngs>0)
-            // else expandShown(i, j)
+            cellValue = (cell.minesAroundCount === 0) ? '' : cell.minesAroundCount //(ngs>0)
         } else cellValue = MINE
         elCell.classList.add('shown')
         renderCell(elCell, cellValue)
@@ -156,7 +196,6 @@ function expandShown(cellI, cellJ) {
     //When user clicks a cell with no mines around, we need to open that cell, but also its neighbors.
 }
 
-
 // function getCellIndex(elCell) {
 //     var i = +elCell.id.split('-')[1]
 //     var j = +elCell.id.split('-')[2]
@@ -166,20 +205,38 @@ function expandShown(cellI, cellJ) {
 // ----FUNCTIONS:----
 
 function cellMarked(elCell, i, j) {
+    //Called on right click to mark a cell (suspected to be a mine)
+    // hide context menu on right click
     var cell = gBoard[i][j]
-    if (cell.isShown) return
     if (cell.isMarked) {
         cell.isMarked = false
+        gGame.markedCount--
         renderCell(elCell, '')
+    } else {
+        cell.isMarked = true
+        if (cell.isMine) gGame.markedCount++
+        checkGameOver()
+        renderCell(elCell, FLAG)
     }
-    cell.isMarked = true
-    renderCell(elCell, FLEG)
 }
-// cellMarked(elCell):
-//Called on right click to mark a cell (suspected to be a mine)
-//Search the web how to hide the context menu on right click
 
-// checkGameOver():
+function checkGameOver() {
+    // 1- all mines are marked,
+    if (gGame.markedCount === gLevel.MINES) {
+        console.log('Game Over!')
+    }
+    // 2- all the other cells are shown
+
+
+}
+
+function endGame() {
+}
+
+//     clearInterval(gTimerInterval)
+//     gGame.isOn = false
+
+// }
 //Game ends when:
 // 1- all mines are marked,
 // 2- all the other cells are shown
